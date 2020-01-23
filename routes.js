@@ -7,10 +7,12 @@ import {createStackNavigator} from 'react-navigation-stack';
 import Principal from './src/principal';
 import Detalhes from './src/detalhes';
 import Login from './src/login';
+import Cadastro from './src/cadastro';
 
 const Router = createDrawerNavigator({
   Main: createStackNavigator({
     Login,
+    Cadastro,
     Principal,
     Detalhes,
   }),

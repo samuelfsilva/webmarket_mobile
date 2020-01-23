@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
 import {
+  View,
   Text,
   StyleSheet,
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
 } from 'react-native';
+import {withNavigation} from 'react-navigation';
 
 class LoginForm extends Component {
   constructor() {
@@ -44,6 +46,13 @@ class LoginForm extends Component {
           }>
           <Text style={styles.botaoTexto}>LOGIN</Text>
         </TouchableOpacity>
+        <View style={styles.botaoCadastro}>
+          <Text style={styles.textoCadastro}>Não é cadastrado? </Text>
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate('Cadastro')}>
+            <Text style={styles.botaoTextoCadastro}>Criar conta</Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
     );
   }
@@ -64,12 +73,25 @@ const styles = StyleSheet.create({
   botao: {
     backgroundColor: '#1a7d44',
     paddingVertical: 10,
+    marginBottom: 10,
   },
   botaoTexto: {
     textAlign: 'center',
     color: '#FFF',
     fontWeight: '700',
   },
+  textoCadastro: {
+    color: '#092e18',
+    fontWeight: '700',
+  },
+  botaoTextoCadastro: {
+    fontWeight: '700',
+    color: 'red',
+  },
+  botaoCadastro: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
 });
 
-export default LoginForm;
+export default withNavigation(LoginForm);
