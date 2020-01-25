@@ -7,6 +7,11 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
 } from 'react-native';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from '@react-native-community/google-signin';
 import {withNavigation} from 'react-navigation';
 
 class LoginForm extends Component {
@@ -15,11 +20,43 @@ class LoginForm extends Component {
     this.state = {
       email: '',
       senha: '',
+      userInfo: {},
+      isSigninInProgress: false,
     };
   }
+  componentDidMount() {
+    GoogleSignin.configure();
+  }
+  signIn = async () => {
+    try {
+      const teste = await GoogleSignin.hasPlayServices();
+      console.log(teste);
+      const userInfo = await GoogleSignin.signIn();
+      console.log('teste');
+      this.setState({userInfo});
+      console.log(this.state.userInfo);
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('Cancelado');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        this.setState({isSigninInProgress: true});
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log('Não foi possível conectar');
+      } else {
+        console.log(error);
+      }
+    }
+  };
   render() {
     return (
       <KeyboardAvoidingView behavior="padding" style={styles.tela}>
+        <GoogleSigninButton
+          style={styles.googleButton}
+          size={GoogleSigninButton.Size.Wide}
+          color={GoogleSigninButton.Color.Dark}
+          onPress={this.signIn}
+          disabled={this.state.isSigninInProgress}
+        />
         <TextInput
           placeholderTextColor="rgba(255,255,255,0.7)"
           placeholder="email"
@@ -91,6 +128,11 @@ const styles = StyleSheet.create({
   botaoCadastro: {
     flexDirection: 'row',
     justifyContent: 'center',
+    marginBottom: 10,
+  },
+  googleButton: {
+    height: 48,
+    marginBottom: 10,
   },
 });
 
