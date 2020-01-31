@@ -14,6 +14,11 @@ import {
 } from '@react-native-community/google-signin';
 import {withNavigation} from 'react-navigation';
 
+GoogleSignin.configure({
+  webClientId:
+    '702085530937-tree6nc3bjsb84qdqqi2l9he2v76cb9i.apps.googleusercontent.com',
+  offlineAccess: true,
+});
 class LoginForm extends Component {
   constructor() {
     super();
@@ -24,13 +29,10 @@ class LoginForm extends Component {
       isSigninInProgress: false,
     };
   }
-  componentDidMount() {
-    GoogleSignin.configure();
-  }
   signIn = async () => {
     try {
       const teste = await GoogleSignin.hasPlayServices();
-      console.log(teste);
+      console.log('hasPlayServices = ' + teste);
       const userInfo = await GoogleSignin.signIn();
       console.log('teste');
       this.setState({userInfo});
