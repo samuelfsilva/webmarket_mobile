@@ -19,7 +19,7 @@ Cadastro.navigationOptions = {
 const styles = StyleSheet.create({
   tela: {
     flex: 1,
-    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#27ae60',
   },
 });
