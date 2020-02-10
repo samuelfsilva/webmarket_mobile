@@ -29,7 +29,7 @@ class LoginForm extends Component {
       isSigninInProgress: false,
     };
   }
-  signIn = async () => {
+  /* signIn = async () => {
     try {
       const teste = await GoogleSignin.hasPlayServices();
       console.log('hasPlayServices = ' + teste);
@@ -48,17 +48,17 @@ class LoginForm extends Component {
         console.log(error);
       }
     }
-  };
+  }; */
   render() {
     return (
       <KeyboardAvoidingView behavior="padding" style={styles.tela}>
-        <GoogleSigninButton
+        {/* <GoogleSigninButton
           style={styles.googleButton}
           size={GoogleSigninButton.Size.Wide}
           color={GoogleSigninButton.Color.Dark}
           onPress={this.signIn}
           disabled={this.state.isSigninInProgress}
-        />
+        /> */}
         <TextInput
           placeholderTextColor="rgba(255,255,255,0.7)"
           placeholder="email"

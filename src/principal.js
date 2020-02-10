@@ -16,8 +16,7 @@ class Principal extends Component {
 
   async getItems() {
     let token = await AsyncStorage.getItem('token');
-    console.log(token);
-    return await new Promise(function(resolve, reject) {
+    /* return await new Promise(function(resolve, reject) {
       fetch(SOCKET_SERVER + '/items', {
         method: 'GET',
         headers: {
@@ -36,7 +35,26 @@ class Principal extends Component {
         .catch(error => {
           console.error('Erro: ', error);
         });
-    });
+    }); */
+    
+    try {
+      var response = await fetch(SOCKET_SERVER + '/items', {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token,
+        },
+      });
+
+      var responseJson = response.json();
+      if (responseJson.error) {
+        return {auth: false};
+      }
+      return responseJson.items;
+    } catch (error) {
+      //
+    }
   }
 
   exibeLista(items, navigate) {

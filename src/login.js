@@ -8,6 +8,7 @@ class Login extends Component {
   render() {
     const {navigate} = this.props.navigation;
     AsyncStorage.getItem('token').then(value => {
+      if (value === null) return;
       return new Promise(function(resolve, reject) {
         fetch(SOCKET_SERVER + '/items', {
           method: 'GET',
@@ -45,19 +46,26 @@ class Login extends Component {
     );
   }
   async login(email, senha, navigate) {
-    await this.conectar(email, senha)
-      .then(value => {
-        AsyncStorage.setItem('usuario', JSON.stringify(value.user));
-        AsyncStorage.setItem('token', value.token);
+      try {
+        var response = await this.conectar(email, senha);
+        if (response.error) {
+          alert(response.error);
+          return;
+        }
+        AsyncStorage.setItem('usuario', JSON.stringify(response.user));
+        AsyncStorage.setItem('token', response.token);
         navigate('Principal');
-      })
-      .catch(error => {
-        alert('Email ou senha inválida.', 'Autenticação', [{text: 'OK'}]);
-      });
+    } catch (error) {
+      alert(error);
+    }
   }
   async conectar(email, senha) {
-    return await new Promise(function(resolve, reject) {
-      fetch(SOCKET_SERVER + '/auth/authenticate', {
+    console.log(email.length, senha.length);
+    if (!email.length || !senha.length) return {
+      error: 'Preencha o email e senha corretamente.'
+    };
+    try {
+      var response = await fetch(SOCKET_SERVER + '/auth/authenticate', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -67,19 +75,18 @@ class Login extends Component {
           email: email,
           password: senha,
         }),
-      })
-        .then(response => response.json())
-        .then(responseJson => {
-          if (responseJson.error) {
-            reject({error: responseJson.error});
-          }
-          //console.log(responseJson);
-          resolve(responseJson);
-        })
-        .catch(error => {
-          console.error('Erro: ', error);
-        });
-    });
+      });
+
+      var responseJson = response.json();
+      if (responseJson.error) {
+        return {
+          error: responseJson.error
+        };
+      }
+      return responseJson;
+    } catch (error) {
+      return {error};
+    }
   }
 }
 
