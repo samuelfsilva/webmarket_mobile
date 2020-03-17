@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   ScrollView,
+  Alert,
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -74,11 +75,98 @@ class CadForm extends Component {
       showData: true,
     });
   }
+
+  Alerta(str) {
+    Alert.alert('Confirmação de dados', str);
+  }
+
+  isEmpty(str) {
+    var texto = str.trim();
+    return (!texto || 0 === texto.length);
+  }
+
+  IsEmail(str){
+    var email = str.trim();
+    var usuario = email.substring(0, email.indexOf("@"));
+    var dominio = email.substring(email.indexOf("@")+ 1, email.length);
+    if ((usuario.length >=1) &&
+        (dominio.length >=3) && 
+        (usuario.search("@")==-1) && 
+        (dominio.search("@")==-1) &&
+        (usuario.search(" ")==-1) && 
+        (dominio.search(" ")==-1) &&
+        (dominio.search(".")!=-1) &&      
+        (dominio.indexOf(".") >=1)&& 
+        (dominio.lastIndexOf(".") < dominio.length - 1)) {
+      return true;
+    }else {
+      return false;
+    }
+  }
+
+  senhaValida(str) {
+    var senha = str;
+    var strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+
+    return strongRegex.test(senha);
+  }
+
+  critica() {
+    const {nome, sobrenome, email, senha, senhaConf, data} = this.state;
+
+    if (this.isEmpty(nome)) {
+      this.Alerta('Informe o nome.');
+      this.nomeInput.focus();
+      return false;
+    }
+    if (this.isEmpty(sobrenome)) {
+      this.Alerta('Informe o sobrenome.');
+      this.sobrenomeInput.focus();
+      return false;
+    }
+    if (this.isEmpty(email)) {
+      this.Alerta('Informe o email.');
+      this.emailInput.focus();
+      return false;
+    }
+    if (!this.IsEmail(email)) {
+      this.Alerta('Informe um email válido.');
+      this.emailInput.focus();
+      return false;
+    }
+    if (this.isEmpty(senha)) {
+      this.Alerta('Informe a senha.');
+      this.passwordInput.focus();
+      return false;
+    }
+    if (this.isEmpty(senhaConf)) {
+      this.Alerta('Informe a senha de confirmação.');
+      this.passwordConfInput.focus();
+      return false;
+    }
+    if (senha !== senhaConf) {
+      this.Alerta('As senhas devem ser identicas.');
+      this.passwordConfInput.focus();
+      return false;
+    }
+    if (!this.senhaValida(senha)) {
+      this.Alerta('A senha deve conter os itens a seguir:\n\n-No minimo 8 caracteres\n-Letras minúsculas\n-Letras maiúsculas\n-Caracteres númericos\n-Caracteres especiais');
+      this.passwordInput.focus();
+      return false;
+    }
+  }
+
+  setCadastro() {
+    if (!this.critica()) {
+      //
+    }
+  }
+
   render() {
     const {photo} = this.state;
     return (
-      <ScrollView horizontal={true}>
-        <KeyboardAvoidingView behavior="padding" style={styles.tela}>
+      <ScrollView>
+        <KeyboardAvoidingView>
           <View style={styles.centralizar}>
             {this.exibeImagem(photo)}
             <Button
@@ -93,6 +181,7 @@ class CadForm extends Component {
             onSubmitEditing={() => this.sobrenomeInput.focus()}
             autoCapitalize="none"
             onChangeText={text => this.setState({nome: text})}
+            ref={input => (this.nomeInput = input)}
             style={[styles.input, styles.botaoFoto]}
           />
           <TextInput
@@ -165,7 +254,7 @@ class CadForm extends Component {
           <TouchableOpacity
             style={styles.botao}
             onPress={() =>
-              this.props.loginCallback(this.state.email, this.state.senha)
+              this.setCadastro()
             }>
             <Text style={styles.botaoTexto}>CADASTRAR</Text>
           </TouchableOpacity>
@@ -190,8 +279,8 @@ const styles = StyleSheet.create({
   },
   input: {
     //height: 40,
-    marginBottom: 10,
-    marginHorizontal: 10,
+    marginBottom: 15,
+    marginHorizontal: 15,
     backgroundColor: 'rgba(255,255,255,0.15)',
     color: '#FFF',
     paddingHorizontal: 10,
@@ -206,7 +295,7 @@ const styles = StyleSheet.create({
   botao: {
     backgroundColor: '#1a7d44',
     paddingVertical: 10,
-    marginBottom: 10,
+    //marginBottom: 10,
   },
   botaoTexto: {
     textAlign: 'center',

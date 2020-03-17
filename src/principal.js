@@ -16,6 +16,7 @@ class Principal extends Component {
 
   async getItems() {
     let token = await AsyncStorage.getItem('token');
+    if (token === null) return {error: 'Token não encontrado.'}
     /* return await new Promise(function(resolve, reject) {
       fetch(SOCKET_SERVER + '/items', {
         method: 'GET',
@@ -53,7 +54,7 @@ class Principal extends Component {
       }
       return responseJson.items;
     } catch (error) {
-      //
+      return {error: 'Erro ao consultar API.'};
     }
   }
 
@@ -98,24 +99,34 @@ class Principal extends Component {
   }
 
   async carregar() {
-    this.setState({loading: true});
-    await this.getItems()
-      .then(
-        value =>
-          this.setState({
-            items: value,
-            auth: true,
-          }),
-        this.setState({loading: false}),
-      )
-      .catch(
-        error =>
-          this.setState({
-            items: [],
-            auth: false,
-          }),
-        this.setState({loading: false}),
-      );
+    this.setState({
+      loading: true
+    });
+
+    try {
+      var items = await this.getItems();
+      if (!items.error) {
+        this.setState({
+          items: value,
+          auth: true,
+          loading: false,
+        });
+      } else {
+        alert(items.error);
+        this.setState({
+          items: [],
+          auth: false,
+          loading: false,
+        });
+        //navigate('Login');
+      }
+    } catch (error) {
+      this.setState({
+        items: [],
+        auth: false,
+        loading: false,
+      });
+    }
   }
 
   async UNSAFE_componentWillMount() {
